@@ -1,4 +1,4 @@
-# IDriveConnectAddons
+# IDriveConnect Addons
 
 The Connected Apps protocol is very powerful and provides an unparalleled convergence experience.
 While the AAIdrive app focuses on a specific feature set, addons providing extra functionality have been [built and released](https://github.com/BimmerGestalt/IDriveConnectAddons/releases) and creative people could implement their own ideas to unlock other possibilities!
