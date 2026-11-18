@@ -12,7 +12,7 @@ class RequestActivity: Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NotificationService.startNotification(applicationContext)
+        NotificationService.startNotification(applicationContext, false)
         requestPermission()
     }
 
@@ -42,7 +42,7 @@ class RequestActivity: Activity() {
             ScreenMirrorProvider.projection = projectionManager.getMediaProjection(resultCode, data)
         } else {
             ScreenMirrorProvider.projection = null
-            NotificationService.startNotification(applicationContext)
+            NotificationService.startNotification(applicationContext, false)
         }
         finish()
     }
