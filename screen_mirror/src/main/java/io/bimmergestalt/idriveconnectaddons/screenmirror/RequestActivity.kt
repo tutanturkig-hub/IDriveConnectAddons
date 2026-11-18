@@ -12,13 +12,26 @@ class RequestActivity: Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NotificationService.startNotification(applicationContext, true)
+        NotificationService.startNotification(applicationContext)
         requestPermission()
     }
 
     private fun requestPermission() {
         val projectionManager = getSystemService(MediaProjectionManager::class.java)
-        startActivityForResult(projectionManager.createScreenCaptureIntent(), PROJECTION_PERMISSION_CODE)
+        val captureIntent = if (android.os.Build.VERSION.SDK_INT >= 34) {
+            try {
+                val configClass = Class.forName("android.media.projection.MediaProjectionConfig")
+                val config = configClass.getMethod("createConfigForDefaultDisplay").invoke(null)
+                projectionManager.javaClass
+                    .getMethod("createScreenCaptureIntent", configClass)
+                    .invoke(projectionManager, config) as Intent
+            } catch (e: Exception) {
+                projectionManager.createScreenCaptureIntent()
+            }
+        } else {
+            projectionManager.createScreenCaptureIntent()
+        }
+        startActivityForResult(captureIntent, PROJECTION_PERMISSION_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -26,10 +39,10 @@ class RequestActivity: Activity() {
 
         val projectionManager = getSystemService(MediaProjectionManager::class.java)
         if (requestCode == PROJECTION_PERMISSION_CODE && resultCode == RESULT_OK && data != null) {
-            ScreenMirrorProvider.projection = projectionManager.getMediaProjection(resultCode, data.clone() as Intent)
+            ScreenMirrorProvider.projection = projectionManager.getMediaProjection(resultCode, data)
         } else {
             ScreenMirrorProvider.projection = null
-            NotificationService.startNotification(applicationContext, false)
+            NotificationService.startNotification(applicationContext)
         }
         finish()
     }
